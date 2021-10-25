@@ -66,12 +66,8 @@ public class Menu {
 		selectJourney=selectJourney-1;//数组从0开始.输入1时对应数组第0项
 		
 		journeys[selectJourney].setPassengers(passengers);//在对应的旅途中添加旅客,数组从0开始,所以进行--操作,journey类中已标记改乘客为未付款状态
-		//根据年龄来确定选择旅游的价格
-		if (passengers.getAge()>=18&&passengers.getAge()<=60) {
-			journeyPrice=journeys[selectJourney].getAdultPrice();
-		}else {
-			journeyPrice=journeys[selectJourney].getConcessionPrice();
-		}
+		//根据年龄,旅途来确定选择旅游的价格
+		journeyPrice=judgePrice(passengers, journeys[selectJourney]);
 		System.out.println(passengers.getName()+"已加入:"+journeys[selectJourney].getRoute()+",需要支付"+journeyPrice+"美元来确定此预订");
 	}
 	//Allow a passenger to make their payment (FR-4)
@@ -102,20 +98,19 @@ public class Menu {
 		System.out.println("请选择乘客");
 		//打印选择旅途的所有乘客
 		for (Passengers passengers2: passengers) {
-			System.out.println(passengers2);
+			if (passengers2!=null) {
+				System.out.println(passengers2);
+			}
 		}
 		selectPassengers=inputSelect.nextInt();
 		selectPassengers--;//输入1,对应数组第0项
-		if (passengers[selectPassengers].getAge()>=18&&passengers[selectPassengers].getAge()<=60) {
-			journeyPrice=journeys[selectJourney].getAdultPrice();
-		}else {
-			journeyPrice=journeys[selectJourney].getConcessionPrice();
-		}
-		System.out.println("Name: "+passengers[selectPassengers].getName()+" Age:"+passengers[selectPassengers].getAge()+" Price:"+journeyPrice+"元");
+		//传入选择的用户和旅途返回价格
+		journeyPrice=judgePrice(passengers[selectPassengers], journeys[selectJourney]);
 		if (journeys[selectJourney].getPassengersPalyFalg(passengers[selectPassengers]).equals("已付款")) {
-			System.out.println("用户已付款!");
+			System.out.println("用户已付款!不可选中进行操作!");
 			return;
 		}
+		System.out.println("Name: "+passengers[selectPassengers].getName()+" Age:"+passengers[selectPassengers].getAge()+" Price:"+journeyPrice+"元");
 		System.out.println("用户是否已付款? 1:确认 2:未确认");
 		confirmFalg=inputSelect.nextInt();
 		//输入不合法数字时重新输入!
@@ -158,21 +153,36 @@ public class Menu {
 		}
 		int Number = 0;//确定的人数
 		int noNumber=0;//未确定人数
+		int totalPrice=0;
 		System.out.println("有"+""+"个确定的预定和"+"个未确定的预定.以下乘客以确认:");
 		HashMap<Passengers, String> hashMap=journeys[selectJourney].getPassengersPalyFalg();
 		for (Entry<Passengers, String> passengerEntry : hashMap.entrySet()) {
 			if (passengerEntry.getValue().equals("已付款")) {
 				System.out.println(passengerEntry.getKey().toString());
+				//传入用户和旅途,确定价格并计算总价格
+				totalPrice+=judgePrice(passengerEntry.getKey(),journeys[selectJourney]);
 				Number++;
 			}else {
 				noNumber++;
 			}
-			System.out.println(passengerEntry.toString());
 		}
+		System.out.println("确认预订的总收据："+totalPrice);
 	}
 	private boolean departedTour(Journey journey) {
 		return false;
 		
 	}
-	
+	/**
+	 * 判断用户年龄,根据旅途价格返回对应价格
+	 * @param passengers 用户
+	 * @param journey 旅途
+	 * @return 价格
+	 */
+	private int judgePrice(Passengers passengers,Journey journey){
+		if (passengers.getAge()>=18&&passengers.getAge()<=60) {
+			return journey.getAdultPrice();
+		}else {
+			return journey.getConcessionPrice();
+		}
+	}
 }
