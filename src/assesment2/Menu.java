@@ -147,7 +147,7 @@ public class Menu {
 			selectJourney=inputSelect.nextInt();
 		}
 		selectJourney=selectJourney-1;//数组从0开始.输入1时对应数组第0项
-		
+		System.out.println("111111");
 	}
 	private boolean departedTour(Journey journey) {
 		return false;
