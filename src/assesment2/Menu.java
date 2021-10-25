@@ -1,5 +1,7 @@
 package assesment2;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 //菜单
@@ -29,7 +31,7 @@ public class Menu {
 				passengerPayment();
 				break;
 			case 5:
-			
+				dispalyTour();
 				break;
 			case 6:
 			
@@ -119,11 +121,11 @@ public class Menu {
 		//输入不合法数字时重新输入!
 		while (confirmFalg!=1||confirmFalg!=2) {
 			if (confirmFalg==1) {
-				journeys[selectJourney].setPassengersPalyFalg(passengers[selectJourney],"已付款");//设为该乘客为付款成功
+				journeys[selectJourney].setPassengersPalyFalg(passengers[selectPassengers],"已付款");//设为该乘客为付款成功
 				System.out.println("确认成功!该乘客已付款!");
 				return;
 			}else if (confirmFalg==2){
-				journeys[selectJourney].setPassengersPalyFalg(passengers[selectJourney],"未付款");
+				journeys[selectJourney].setPassengersPalyFalg(passengers[selectPassengers],"未付款");
 				System.out.println("确认成功!该乘客未付款!");
 				return;
 			}else {
@@ -147,7 +149,26 @@ public class Menu {
 			selectJourney=inputSelect.nextInt();
 		}
 		selectJourney=selectJourney-1;//数组从0开始.输入1时对应数组第0项
-		System.out.println("111111");
+		//判断旅行是否开始
+		Journey journey=journeys[selectJourney];
+		if (journeys[selectJourney].getJourneyFlag()) {
+			System.out.println("旅游行程:"+journeys[selectJourney].getRoute()+"本次旅行已开始");
+		}else {
+			System.out.println("旅游行程:"+journeys[selectJourney].getRoute()+"本次旅行尚未开始");
+		}
+		int Number = 0;//确定的人数
+		int noNumber=0;//未确定人数
+		System.out.println("有"+""+"个确定的预定和"+"个未确定的预定.以下乘客以确认:");
+		HashMap<Passengers, String> hashMap=journeys[selectJourney].getPassengersPalyFalg();
+		for (Entry<Passengers, String> passengerEntry : hashMap.entrySet()) {
+			if (passengerEntry.getValue().equals("已付款")) {
+				System.out.println(passengerEntry.getKey().toString());
+				Number++;
+			}else {
+				noNumber++;
+			}
+			System.out.println(passengerEntry.toString());
+		}
 	}
 	private boolean departedTour(Journey journey) {
 		return false;

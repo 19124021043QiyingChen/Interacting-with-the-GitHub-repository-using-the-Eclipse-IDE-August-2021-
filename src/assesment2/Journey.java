@@ -2,6 +2,7 @@ package assesment2;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Journey {
 	private String Route;//旅途途经地点
@@ -11,7 +12,7 @@ public class Journey {
 	private int passengersNumber=0;//定义旅行人数,最大为20人
 	private boolean journeyFlag=false;//定义旅游状态,未出发为false,出发为true
 	private Passengers[] passengers=new Passengers[20];//存放旅客的数组
-	private HashMap<Passengers,String> passengersPalyFalg=new HashMap<Passengers, String>();//旅客付款标记,付款则标记为true,未付款标记为false;一个旅客对一个标记
+	private Map<Passengers,String> passengersPalyFalg=new HashMap<Passengers, String>();//旅客付款标记,付款则标记为true,未付款标记为false;一个旅客对一个标记
 	public Journey() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -61,7 +62,14 @@ public class Journey {
 		this.passengers = passengers;
 	}
 	
-	public boolean isJourneyFlag() {
+	public HashMap<Passengers, String> getPassengersPalyFalg() {
+		
+		return (HashMap<Passengers, String>) passengersPalyFalg;
+	}
+	public void setPassengersPalyFalg(HashMap<Passengers, String> passengersPalyFalg) {
+		this.passengersPalyFalg = passengersPalyFalg;
+	}
+	public boolean getJourneyFlag() {
 		return journeyFlag;
 	}
 	public void setJourneyFlag(boolean journeyFlag) {
@@ -72,8 +80,8 @@ public class Journey {
 	 * @param passengers 乘客
 	 * @return 
 	 */
-	public void setPassengersPalyFalg(Passengers passengers,String paly) {
-		passengersPalyFalg.put(passengers, paly);
+	public String setPassengersPalyFalg(Passengers passengers,String paly) {
+		return passengersPalyFalg.put(passengers, paly);
 		
 	}
 	/**
