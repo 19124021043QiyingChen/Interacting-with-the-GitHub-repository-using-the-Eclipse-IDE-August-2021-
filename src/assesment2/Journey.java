@@ -63,7 +63,6 @@ public class Journey {
 	}
 	
 	public HashMap<Passengers, String> getPassengersPalyFalg() {
-		
 		return (HashMap<Passengers, String>) passengersPalyFalg;
 	}
 	public void setPassengersPalyFalg(HashMap<Passengers, String> passengersPalyFalg) {

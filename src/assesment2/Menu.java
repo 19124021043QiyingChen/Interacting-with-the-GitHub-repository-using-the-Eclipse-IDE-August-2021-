@@ -93,9 +93,18 @@ public class Menu {
 			selectJourney=inputSelect.nextInt();
 		}
 		selectJourney--;
-		//
+		//获得选中旅途的所有乘客
 		passengers=journeys[selectJourney].getPassengers();
 		System.out.println("请选择乘客");
+		//1:判断是否有乘客,无则输出提示,乘客按顺序添加,判断第一个乘客是否为空即可
+//		if (passengers[0]==null) {
+//			System.out.println("该旅途中无乘客!");
+//			return;
+//		}
+		//2:调用判断函数判断数组是否非空并输出提示
+		if (judgeNull(passengers)) {
+			return;
+		}
 		//打印选择旅途的所有乘客
 		for (Passengers passengers2: passengers) {
 			if (passengers2!=null) {
@@ -133,6 +142,9 @@ public class Menu {
 	private void dispalyTour() {
 		int selectJourney;//
 		int journeyPrice;//定义旅游价格
+		int Number = 0;//确定的人数
+		int noNumber=0;//未确定人数
+		int totalPrice=0;//总价格
 		Scanner inputSelect = new Scanner(System.in);
 		System.out.println("提供以下行程:");
 		for (Journey journey : journeys) {
@@ -151,11 +163,17 @@ public class Menu {
 		}else {
 			System.out.println("旅游行程:"+journeys[selectJourney].getRoute()+"本次旅行尚未开始");
 		}
-		int Number = 0;//确定的人数
-		int noNumber=0;//未确定人数
-		int totalPrice=0;
-		System.out.println("有"+""+"个确定的预定和"+"个未确定的预定.以下乘客以确认:");
+		//获取journey中的旅客付款hashmap
 		HashMap<Passengers, String> hashMap=journeys[selectJourney].getPassengersPalyFalg();
+		for (Entry<Passengers, String> passengerEntry : hashMap.entrySet()) {
+			if (passengerEntry.getValue().equals("已付款")) {
+				//记录确定人数
+				Number++;
+			}else {
+				noNumber++;
+			}
+		}
+		System.out.println("有"+Number+"个确定的预定和"+noNumber+"个未确定的预定.以下乘客已确认:");
 		for (Entry<Passengers, String> passengerEntry : hashMap.entrySet()) {
 			if (passengerEntry.getValue().equals("已付款")) {
 				System.out.println(passengerEntry.getKey().toString());
@@ -184,5 +202,23 @@ public class Menu {
 		}else {
 			return journey.getConcessionPrice();
 		}
+	}
+	/**
+	 * 判断乘客数组是否为空
+	 * @param passengers 乘客数组
+	 * @return 数组为空返回true;非空返回false
+	 */
+	private boolean judgeNull(Passengers[] passengers) {
+		int j=0;
+		for (int i = 0; i < passengers.length; i++) {
+			if (passengers[i]==null) {
+				j++;
+			}
+			if (j>=passengers.length) {
+				System.out.println("该旅途中无乘客!");
+				return true;
+			}
+		}
+		return false;
 	}
 }

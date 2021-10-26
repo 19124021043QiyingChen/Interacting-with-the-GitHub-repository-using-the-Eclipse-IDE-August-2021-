@@ -7,6 +7,5 @@ public class Test {
 		name[1] = new Journey("π„÷›-’øΩ≠",32832,3399,10);
 		Menu menu= new Menu(name);
 		menu.menuProgram();
-		
 	}
 }
