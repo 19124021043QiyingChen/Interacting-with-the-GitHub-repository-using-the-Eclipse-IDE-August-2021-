@@ -65,9 +65,6 @@ public class Journey {
 	public HashMap<Passengers, String> getPassengersPalyFalg() {
 		return (HashMap<Passengers, String>) passengersPalyFalg;
 	}
-	public void setPassengersPalyFalg(HashMap<Passengers, String> passengersPalyFalg) {
-		this.passengersPalyFalg = passengersPalyFalg;
-	}
 	public boolean getJourneyFlag() {
 		return journeyFlag;
 	}
@@ -77,9 +74,17 @@ public class Journey {
 	/**
 	 * 设置乘客付费状态
 	 * @param passengers 乘客
-	 * @return 
+	 * @return 付款状态键值对
 	 */
 	public String setPassengersPalyFalg(Passengers passengers,String paly) {
+		if (journeyFlag) {
+			System.out.println("该旅途已出发!不可修改付款状态!");
+			return passengersPalyFalg.put(passengers, "未付款");
+		}else if(paly.equals("未付款")){
+			System.out.println("该旅途已出发!不可付款");
+			return passengersPalyFalg.put(passengers, "未付款");
+		}
+		System.out.println("确认成功!该乘客已付款!");
 		return passengersPalyFalg.put(passengers, paly);
 		
 	}
@@ -91,10 +96,17 @@ public class Journey {
 	public String getPassengersPalyFalg(Passengers passengers) {
 		return passengersPalyFalg.get(passengers);
 	}
+	/**
+	 * 添加用户到旅途中,当人数大于20时或旅途出发时不可在添加乘客
+	 * @param passengers
+	 */
 	public void setPassengers(Passengers passengers) {
 		//判断人数.大于20时不可添加
 		if (passengersNumber>19) {
 			System.out.println("该旅途已满20人!请选择其他旅途!");
+			return;
+		}else if (journeyFlag) {
+			System.out.println("该旅途已出发!不可添加乘客!");
 			return;
 		}
 		this.passengers[passengersNumber]= passengers;//第一个放在数组第0位,passengersNumber为人数,对应位置信息
