@@ -188,21 +188,32 @@ public class Menu {
 	}
 	private void departedTour() {
 		Scanner input=new Scanner(System.in);
+		int selectJounery=0;//记录选项
 		System.out.println("请确定以出发的旅游!");
 		for (int i = 0; i < journeys.length; i++) {
 			System.out.println(journeys[i].toString());
 		}
-		int selectJounery=input.nextInt();
-		journeys[--selectJounery].setJourneyFlag(true);//设为选中的旅途为已出发
-		System.out.println("该旅途已设为出发状态!未付款的乘客不可再付款");
-		HashMap<Passengers, String> passengersPlayState=journeys[selectJounery].getPassengersPalyFalg();
-		for (Entry<Passengers, String> passengerEntry : passengersPlayState.entrySet()) {
-			if (passengerEntry.getValue().equals("已付款")) {
-				System.out.println(passengerEntry.getKey().toString());
-			}
+		selectJounery=input.nextInt();
+		//得到选中旅途的乘客付款信息
+		HashMap<Passengers, String> passengersPlayState=journeys[--selectJounery].getPassengersPalyFalg();
+		//判断是否有用户确定付款,全无时不可设置!
+		if (!passengersPlayState.containsValue("已付款")) {
+			System.out.println("无用户付款!不可设置为出发状态!");
+			return;
 		}
-
-		System.out.println("");//输出已付款的乘客
+		//出发的旅途不可修改和选中操作
+		if (journeys[selectJounery].getJourneyFlag()) {
+			System.out.println("该旅途已为出发状态!不可修改!");
+			return;
+		}
+		journeys[selectJounery].setJourneyFlag(true);//设为选中的旅途为已出发
+		System.out.println("该旅途已设为出发状态!未付款的乘客不可再付款");
+		System.out.println("旅途路线:"+journeys[selectJounery].getRoute());
+		System.out.println("旅途时间:"+journeys[selectJounery].getDuration()+"天");
+		System.out.println("登机乘客如下:");
+		outputPassengersPlay(passengersPlayState, "已付款");
+		System.out.println("以下乘客未付款,将不包括在登机名单中:");
+		outputPassengersPlay(passengersPlayState, "未付款");
 	}
 	/**
 	 * 判断用户年龄,根据旅途价格返回对应价格
@@ -248,5 +259,17 @@ public class Menu {
 			selectJourney=input.nextInt();
 		}
 		return selectJourney;
+	}
+	/**
+	 * 根据输入字符串,打印出符合的乘客信息
+	 * @param passengersPlayState 记录付款信息的hashmap
+	 * @param string 条件字符串
+	 */
+	private void outputPassengersPlay(HashMap<Passengers, String> passengersPlayState,String string) {
+		for (Entry<Passengers, String> passengerEntry : passengersPlayState.entrySet()) {
+			if (passengerEntry.getValue().equals(string)) {
+				System.out.println(passengerEntry.getKey().toString());
+			}
+		}
 	}
 }
