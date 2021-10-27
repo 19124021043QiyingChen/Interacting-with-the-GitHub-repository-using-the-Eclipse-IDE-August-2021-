@@ -42,6 +42,8 @@ public class Menu {
 			case 6:
 				departedTour();
 				break;
+			default:
+				System.out.println("请输入有效选项!");
 			}
 		} while (fr!=0);
 	}
@@ -50,7 +52,7 @@ public class Menu {
 	 * 添加乘客信息,并添加到旅途中
 	 */
 	private void addPassenger() {
-		int selectJourney;//
+		int selectJourney=0;//
 		int journeyPrice;//定义旅游价格
 		Passengers passengers = new Passengers();
 		System.out.println("请输入乘客姓名:");
@@ -65,7 +67,6 @@ public class Menu {
 			System.out.println(journey);
 		}
 		System.out.println("输入要将"+passengers.getName()+"添加到旅游行程的选择:");
-		selectJourney=input.nextInt();//记录选项
 		//判断输入是否合法
 		selectJourney=judgeJourneyInputLegal(selectJourney, journeys, input)-1;//数组从0开始.输入1时对应数组第0项
 		Journey selectedJourney=journeys.get(selectJourney);//创建journey对象接受选择的旅途,该对象为选中的旅途
@@ -84,8 +85,8 @@ public class Menu {
 	 * 选择对应的旅途中的乘客,并设置乘客的付款信息 
 	 */
 	private void passengerPayment() {
-		int selectJourney;//记录选择旅途选项
-		int selectPassengers;//记录选择乘客选项
+		int selectJourney=0;//记录选择旅途选项
+		int selectPassengers=0;//记录选择乘客选项
 		int journeyPrice;//定义旅游价格
 		int confirmFalg;//标记是否确认付款
 		Passengers[] passengers=null;//旅途类中存放乘客的数组
@@ -94,7 +95,6 @@ public class Menu {
 		for (int i = 0; i < journeys.size(); i++) {
 			System.out.println(journeys.get(i).toString());
 		}
-		selectJourney=inputSelect.nextInt();
 		//调用journey输入函数,判断输入是否合法,并返回合法输入
 		selectJourney=judgeJourneyInputLegal(selectJourney, journeys, inputSelect)-1;//减1操作是为数组下标对应
 		Journey selectedJourney=journeys.get(selectJourney);//创建journey对象接受选择的旅途
@@ -121,11 +121,10 @@ public class Menu {
 				System.out.println(passengers2);
 			}
 		}
-		selectPassengers=inputSelect.nextInt();
 		selectPassengers=judgeInputLegal(selectPassengers, passengers, inputSelect);//判断输入是否合法
 		//传入选择的用户和旅途,返回对应价格
 		journeyPrice=judgePrice(passengers[--selectPassengers],selectedJourney);
-		if (journeys.get(selectJourney).getPassengersPalyFalg(passengers[selectPassengers]).equals("已付款")) {
+		if (selectedJourney.getPassengersPalyFalg(passengers[selectPassengers]).equals("已付款")) {
 			System.out.println("用户已付款!不可选中进行操作!");
 			return;
 		}
@@ -150,17 +149,16 @@ public class Menu {
 	 * 显示旅途信息和乘客付款情况
 	 */
 	private void dispalyTour() {
-		int selectJourney;//
+		int selectJourney=0;//
 		int journeyPrice;//定义旅游价格
 		int Number = 0;//确定的人数
-		int noNumber=0;//未确定人数
+		int noPalyNumber=0;//未确定人数
 		int totalPrice=0;//总价格
 		Scanner inputSelect = new Scanner(System.in);
 		System.out.println("提供以下行程:");
 		for (Journey journey : journeys) {
 			System.out.println(journey);
 		}
-		selectJourney=inputSelect.nextInt();//记录选项
 		selectJourney=judgeInputLegal(selectJourney, journeys, inputSelect);//判断输入是否合法
 		Journey selectedJourney=journeys.get(--selectJourney);//创建journey对象接受选择的旅途,数组从0开始.输入1时对应数组第0项
 		//判断旅行是否开始
@@ -177,10 +175,10 @@ public class Menu {
 				//记录确定人数
 				Number++;
 			}else {
-				noNumber++;
+				noPalyNumber++;//记录未确定人数
 			}
 		}
-		System.out.println("有"+Number+"个确定的预定和"+noNumber+"个未确定的预定.以下乘客已确认:");
+		System.out.println("有"+Number+"个确定的预定和"+noPalyNumber+"个未确定的预定.以下乘客已确认:");
 		//打印确定人数和价格
 		for (Entry<Passengers, String> passengerEntry : passengersPlayState.entrySet()) {
 			if (passengerEntry.getValue().equals("已付款")) {
@@ -201,7 +199,6 @@ public class Menu {
 		for (int i = 0; i < journeys.size(); i++) {
 			System.out.println(journeys.get(i).toString());
 		}
-		selectJounery=input.nextInt();
 		selectJounery=judgeInputLegal(selectJounery, journeys, input);//调用函数判断输入是否合法
 		Journey selectedJourney=journeys.get(--selectJounery);//创建journey对象接受选择的旅途
 		//得到选中旅途的乘客付款信息
@@ -264,6 +261,7 @@ public class Menu {
 	 * @return 返回合法输入
 	 */
 	private int judgeJourneyInputLegal(int selectJourney,ArrayList<Journey> journeys,Scanner input) {
+		selectJourney=input.nextInt();
 		while (selectJourney>journeys.size()||selectJourney<=0) {
 			System.out.println("该选项不存在!请重新输入!");
 			selectJourney=input.nextInt();
@@ -290,6 +288,7 @@ public class Menu {
 	 * @return 返回合法输入
 	 */
 	private int judgeInputLegal(int selectJounery,ArrayList<Journey> journeys,Scanner input) {
+		selectJounery=input.nextInt();
 		while (selectJounery>journeys.size()||selectJounery<=0) {
 			System.out.println("该选项不存在!请重新输入!");
 			selectJounery=input.nextInt();
@@ -305,6 +304,7 @@ public class Menu {
 	 */
 	private int judgeInputLegal(int selectPassenger,Passengers[] passengers,Scanner input) {
 		int passengersNUllNumbers=0;
+		selectPassenger=input.nextInt();
 		//记录passengers非空元素
 		for (int i = 0; i < passengers.length; i++) {
 			if (passengers[i]==null) {
