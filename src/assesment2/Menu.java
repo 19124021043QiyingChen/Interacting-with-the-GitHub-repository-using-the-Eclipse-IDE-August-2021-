@@ -1,14 +1,20 @@
 package assesment2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
 //菜单
 public class Menu {
-	private Journey[] journeys;//旅游行程
+	private ArrayList<Journey> journeys;//可变数组
+//	private Journey[] journeys;//旅游行程
 	//屏幕程序,可变数组
-	public Menu(Journey...journeys) {
+//	public Menu(Journey...journeys) {
+//		super();
+//		this.journeys = journeys;//传入旅游行程
+//	}
+	public Menu(ArrayList<Journey> journeys) {
 		super();
 		this.journeys = journeys;//传入旅游行程
 	}
@@ -40,8 +46,9 @@ public class Menu {
 		} while (fr!=0);
 	}
 	
-	//添加乘客到行程
-	//Add a new passenger to a travel tour (FR-3)
+	/**
+	 * 添加乘客信息,并添加到旅途中
+	 */
 	private void addPassenger() {
 		int selectJourney;//
 		int journeyPrice;//定义旅游价格
@@ -61,20 +68,20 @@ public class Menu {
 		selectJourney=input.nextInt();//记录选项
 		//判断输入是否合法
 		selectJourney=judgeJourneyInputLegal(selectJourney, journeys, input)-1;//数组从0开始.输入1时对应数组第0项
+		Journey selectedJourney=journeys.get(selectJourney);//创建journey对象接受选择的旅途,该对象为选中的旅途
 		//第1次判断旅途状态,出发时输出提示
-		if (journeys[selectJourney].getJourneyFlag()) {
+		if (selectedJourney.getJourneyFlag()) {
 			System.out.println("该行程已出发!不可添加乘客!");
 			return;
 		}
-		journeys[selectJourney].setPassengers(passengers);//在对应的旅途中添加旅客,数组从0开始,所以进行--操作,journey类中已标记改乘客为未付款状态
+		selectedJourney.setPassengers(passengers);//在对应的旅途中添加旅客,数组从0开始,所以进行--操作,journey类中已标记改乘客为未付款状态
 		//根据年龄,旅途来确定选择旅游的价格
-		journeyPrice=judgePrice(passengers, journeys[selectJourney]);
-		System.out.println(passengers.getName()+"已加入:"+journeys[selectJourney].getRoute()+",需要支付"+journeyPrice+"美元来确定此预订");
+		journeyPrice=judgePrice(passengers,selectedJourney);
+		System.out.println(passengers.getName()+"已加入:"+selectedJourney.getRoute()+",需要支付"+journeyPrice+"美元来确定此预订");
 	}
 	//Allow a passenger to make their payment (FR-4)
 	/**
-	 * 乘客付款 FR4
-	 * @param passengers 乘客
+	 * 选择对应的旅途中的乘客,并设置乘客的付款信息 
 	 */
 	private void passengerPayment() {
 		int selectJourney;//记录选择旅途选项
@@ -84,19 +91,20 @@ public class Menu {
 		Passengers[] passengers=null;//旅途类中存放乘客的数组
 		Scanner inputSelect = new Scanner(System.in);
 		System.out.println("请选择旅途行程");
-		for (int i = 0; i < journeys.length; i++) {
-			System.out.println(journeys[i].toString());
+		for (int i = 0; i < journeys.size(); i++) {
+			System.out.println(journeys.get(i).toString());
 		}
 		selectJourney=inputSelect.nextInt();
 		//调用journey输入函数,判断输入是否合法,并返回合法输入
-		selectJourney=judgeJourneyInputLegal(selectJourney, journeys, inputSelect)-1;
+		selectJourney=judgeJourneyInputLegal(selectJourney, journeys, inputSelect)-1;//减1操作是为数组下标对应
+		Journey selectedJourney=journeys.get(selectJourney);//创建journey对象接受选择的旅途
 		//判断旅途状态并输出提示
-		if (journeys[selectJourney].getJourneyFlag()) {
+		if (selectedJourney.getJourneyFlag()) {
 			System.out.println("该行程已出发!不可查看和修改操作!");
 			return;
 		}
 		//获得选中旅途的所有乘客
-		passengers=journeys[selectJourney].getPassengers();
+		passengers=selectedJourney.getPassengers();
 		System.out.println("请选择乘客");
 		//1:判断是否有乘客,无则输出提示,乘客按顺序添加,判断第一个乘客是否为空即可
 //		if (passengers[0]==null) {
@@ -114,10 +122,10 @@ public class Menu {
 			}
 		}
 		selectPassengers=inputSelect.nextInt();
-		selectPassengers--;//输入1,对应数组第0项
-		//传入选择的用户和旅途返回价格
-		journeyPrice=judgePrice(passengers[selectPassengers], journeys[selectJourney]);
-		if (journeys[selectJourney].getPassengersPalyFalg(passengers[selectPassengers]).equals("已付款")) {
+		selectPassengers=judgeInputLegal(selectPassengers, passengers, inputSelect);//判断输入是否合法
+		//传入选择的用户和旅途,返回对应价格
+		journeyPrice=judgePrice(passengers[--selectPassengers],selectedJourney);
+		if (journeys.get(selectJourney).getPassengersPalyFalg(passengers[selectPassengers]).equals("已付款")) {
 			System.out.println("用户已付款!不可选中进行操作!");
 			return;
 		}
@@ -127,10 +135,10 @@ public class Menu {
 		//输入不合法数字时重新输入!
 		while (confirmFalg!=1||confirmFalg!=2) {
 			if (confirmFalg==1) {
-				journeys[selectJourney].setPassengersPalyFalg(passengers[selectPassengers],"已付款");//设为该乘客为付款成功
+				selectedJourney.setPassengersPalyFalg(passengers[selectPassengers],"已付款");//设为该乘客为付款成功
 				return;
 			}else if (confirmFalg==2){
-				journeys[selectJourney].setPassengersPalyFalg(passengers[selectPassengers],"未付款");
+				selectedJourney.setPassengersPalyFalg(passengers[selectPassengers],"未付款");
 				System.out.println("确认成功!该乘客未付款!");
 				return;
 			}else {
@@ -138,8 +146,9 @@ public class Menu {
 			}
 		}
 	}
-	//显示路途信息
-	//Allow a passenger to make their payment (FR-5)
+	/**
+	 * 显示旅途信息和乘客付款情况
+	 */
 	private void dispalyTour() {
 		int selectJourney;//
 		int journeyPrice;//定义旅游价格
@@ -152,20 +161,16 @@ public class Menu {
 			System.out.println(journey);
 		}
 		selectJourney=inputSelect.nextInt();//记录选项
-		while (selectJourney>journeys.length) {
-			System.out.println("该选项不存在!请重新输入!");
-			selectJourney=inputSelect.nextInt();
-		}
-		selectJourney=selectJourney-1;//数组从0开始.输入1时对应数组第0项
+		selectJourney=judgeInputLegal(selectJourney, journeys, inputSelect);//判断输入是否合法
+		Journey selectedJourney=journeys.get(--selectJourney);//创建journey对象接受选择的旅途,数组从0开始.输入1时对应数组第0项
 		//判断旅行是否开始
-		Journey journey=journeys[selectJourney];
-		if (journeys[selectJourney].getJourneyFlag()) {
-			System.out.println("旅游行程:"+journeys[selectJourney].getRoute()+"本次旅行已开始");
+		if (selectedJourney.getJourneyFlag()) {
+			System.out.println("旅游行程:"+selectedJourney.getRoute()+"本次旅行已开始");
 		}else {
-			System.out.println("旅游行程:"+journeys[selectJourney].getRoute()+"本次旅行尚未开始");
+			System.out.println("旅游行程:"+selectedJourney.getRoute()+"本次旅行尚未开始");
 		}
 		//获取journey中的旅客付款hashmap
-		HashMap<Passengers, String> passengersPlayState=journeys[selectJourney].getPassengersPalyFalg();
+		HashMap<Passengers, String> passengersPlayState=selectedJourney.getPassengersPalyFalg();
 		//得到确定和未确定人数
 		for (Entry<Passengers, String> passengerEntry : passengersPlayState.entrySet()) {
 			if (passengerEntry.getValue().equals("已付款")) {
@@ -181,35 +186,40 @@ public class Menu {
 			if (passengerEntry.getValue().equals("已付款")) {
 				System.out.println(passengerEntry.getKey().toString());
 				//传入用户和旅途,确定价格并计算总价格
-				totalPrice+=judgePrice(passengerEntry.getKey(),journeys[selectJourney]);
+				totalPrice+=judgePrice(passengerEntry.getKey(),journeys.get(selectJourney));
 			}
 		}
 		System.out.println("确认预订的总收据："+totalPrice);
 	}
+	/**
+	 * 标记旅途出发状态
+	 */
 	private void departedTour() {
 		Scanner input=new Scanner(System.in);
 		int selectJounery=0;//记录选项
 		System.out.println("请确定以出发的旅游!");
-		for (int i = 0; i < journeys.length; i++) {
-			System.out.println(journeys[i].toString());
+		for (int i = 0; i < journeys.size(); i++) {
+			System.out.println(journeys.get(i).toString());
 		}
 		selectJounery=input.nextInt();
+		selectJounery=judgeInputLegal(selectJounery, journeys, input);//调用函数判断输入是否合法
+		Journey selectedJourney=journeys.get(--selectJounery);//创建journey对象接受选择的旅途
 		//得到选中旅途的乘客付款信息
-		HashMap<Passengers, String> passengersPlayState=journeys[--selectJounery].getPassengersPalyFalg();
+		HashMap<Passengers, String> passengersPlayState=selectedJourney.getPassengersPalyFalg();
 		//判断是否有用户确定付款,全无时不可设置!
 		if (!passengersPlayState.containsValue("已付款")) {
 			System.out.println("无用户付款!不可设置为出发状态!");
 			return;
 		}
 		//出发的旅途不可修改和选中操作
-		if (journeys[selectJounery].getJourneyFlag()) {
+		if (selectedJourney.getJourneyFlag()) {
 			System.out.println("该旅途已为出发状态!不可修改!");
 			return;
 		}
-		journeys[selectJounery].setJourneyFlag(true);//设为选中的旅途为已出发
+		selectedJourney.setJourneyFlag(true);//设为选中的旅途为已出发
 		System.out.println("该旅途已设为出发状态!未付款的乘客不可再付款");
-		System.out.println("旅途路线:"+journeys[selectJounery].getRoute());
-		System.out.println("旅途时间:"+journeys[selectJounery].getDuration()+"天");
+		System.out.println("旅途路线:"+selectedJourney.getRoute());
+		System.out.println("旅途时间:"+selectedJourney.getDuration()+"天");
 		System.out.println("登机乘客如下:");
 		outputPassengersPlay(passengersPlayState, "已付款");
 		System.out.println("以下乘客未付款,将不包括在登机名单中:");
@@ -253,15 +263,15 @@ public class Menu {
 	 * @param input 键盘输入对象
 	 * @return 返回合法输入
 	 */
-	private int judgeJourneyInputLegal(int selectJourney,Journey[] journeys,Scanner input) {
-		while (selectJourney>journeys.length||selectJourney<=0) {
+	private int judgeJourneyInputLegal(int selectJourney,ArrayList<Journey> journeys,Scanner input) {
+		while (selectJourney>journeys.size()||selectJourney<=0) {
 			System.out.println("该选项不存在!请重新输入!");
 			selectJourney=input.nextInt();
 		}
 		return selectJourney;
 	}
 	/**
-	 * 根据输入字符串,打印出符合的乘客信息
+	 * 根据输入字符串,打印出符合的乘客信息,比如输入"已付款",则打印出付款的乘客信息
 	 * @param passengersPlayState 记录付款信息的hashmap
 	 * @param string 条件字符串
 	 */
@@ -271,5 +281,41 @@ public class Menu {
 				System.out.println(passengerEntry.getKey().toString());
 			}
 		}
+	}
+	/**
+	 * 传入选项,判断输入是否合法,比如数组有6个元素,输入7时判断为不合法
+	 * @param selectJounery 选择的选项
+	 * @param journeys 存放的旅途数组
+	 * @param input 输入变量
+	 * @return 返回合法输入
+	 */
+	private int judgeInputLegal(int selectJounery,ArrayList<Journey> journeys,Scanner input) {
+		while (selectJounery>journeys.size()||selectJounery<=0) {
+			System.out.println("该选项不存在!请重新输入!");
+			selectJounery=input.nextInt();
+		}
+		return selectJounery;
+	}
+	/**
+	 * 传入选项,判断输入是否合法,比如数组有6个元素,输入7时判断为不合法,该函数传入乘客时为判断乘客选择是否合法,传入旅途时为判断旅途选择是否合法
+	 * @param selectJounery 选择的选项
+	 * @param Passengers[] 存放乘客的数组
+	 * @param input 输入变量
+	 * @return 返回合法输入
+	 */
+	private int judgeInputLegal(int selectPassenger,Passengers[] passengers,Scanner input) {
+		int passengersNUllNumbers=0;
+		//记录passengers非空元素
+		for (int i = 0; i < passengers.length; i++) {
+			if (passengers[i]==null) {
+				passengersNUllNumbers++;
+			}
+		}
+		//20个减去非空元素得到实际乘客个数
+		while (selectPassenger>(20-passengersNUllNumbers)||selectPassenger<=0) {
+			System.out.println("该选项不存在!请重新输入!");
+			selectPassenger=input.nextInt();
+		}
+		return selectPassenger;
 	}
 }

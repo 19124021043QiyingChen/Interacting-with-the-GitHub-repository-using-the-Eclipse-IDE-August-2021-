@@ -97,8 +97,8 @@ public class Journey {
 		return passengersPalyFalg.get(passengers);
 	}
 	/**
-	 * 添加用户到旅途中,当人数大于20时或旅途出发时不可在添加乘客
-	 * @param passengers
+	 * 添加用户到旅途中,并设为未付款状态,当人数大于20时或旅途出发时不可在添加乘客
+	 * @param passengers 需要添加到旅途的乘客
 	 */
 	public void setPassengers(Passengers passengers) {
 		//判断人数.大于20时不可添加
